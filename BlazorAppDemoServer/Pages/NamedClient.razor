@@ -1,0 +1,24 @@
+﻿@page "/named-client"
+@using Data;
+@using BlazorAppDemoServer.Services
+@inject JsonPlaceHolderClient _jsonPlaceHolderClient;
+@*@inherits BlazorAppDemoServer.Pages.ComponentBases.NamedClientBase;*@
+
+<h3>TypedClient</h3>
+<div>
+	@foreach (var todo in todos)
+	{
+		<p>@todo.Title</p>
+	}
+</div>
+
+@code {
+	protected List<Todos> todos = new List<Todos>();
+
+	protected override async Task OnInitializedAsync()
+	{
+		todos = await _jsonPlaceHolderClient.GetTodos();
+	}
+
+	//private readonly IJsonPlaceHolderClient _jsonPlaceHolderClient;
+}

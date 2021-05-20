@@ -1,0 +1,11 @@
+﻿@page "/ditest"
+<h3>DependencyInjectionTest</h3>
+
+@using BlazorAppDemo.Services
+@inject RandomService RandomService
+
+<h3>Random #:  @RandomService.RandomId</h3>
+
+@code {
+
+}

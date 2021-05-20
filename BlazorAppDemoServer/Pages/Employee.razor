@@ -1,0 +1,71 @@
+﻿@page "/employee"
+@using Microsoft.AspNetCore.Identity
+@using BlazorAppDemoServer.Data
+@using System.Text.Json
+@inject IHttpClientFactory _clientFactory
+
+<h3>Employee</h3>
+
+@if (string.IsNullOrWhiteSpace(errorString) == false)
+{
+	<div class="h2">@errorString</div>
+}
+else if (blogs is null)
+{
+	<div class="h4">Loading...</div>
+}
+else
+{
+	<table class="table table-striped">
+		<thead class="thead-dark">
+		<tr>
+			<th>Title</th>
+			<th>Content</th>
+		</tr>
+		</thead>
+		<tbody>
+			@foreach (var r in blogs)
+			{
+			<tr>
+				<td>
+					@r.title
+				</td>
+				<td>
+					@r.content
+				</td>
+			</tr>
+			}
+		</tbody>
+	</table>
+}
+
+@code {
+	DummyModel<BloggerPosts> dum;
+	IEnumerable<BloggerPosts> blogs;
+	string errorString;
+
+	protected override async Task OnInitializedAsync()
+	{
+		var request = new HttpRequestMessage(HttpMethod.Get, "https://www.googleapis.com/blogger/v3/blogs/744143003682649412/posts/?key=AIzaSyCqVQM1n7UFHasxLQ_yyevXyf1_9nA2pcg");
+		var client = _clientFactory.CreateClient();
+
+		HttpResponseMessage response = await client.SendAsync(request);
+
+		try
+		{
+			if (response.IsSuccessStatusCode)
+			{
+				errorString = null;
+				dum = await response.Content.ReadFromJsonAsync<DummyModel<BloggerPosts>>();
+				//string data = await response.Content.ReadAsStringAsync();
+				//dum = JsonSerializer.Deserialize<DummyModel<BloggerPosts>>(data);
+				blogs = dum.items;
+			}
+		}
+		catch (Exception ex)
+		{
+			errorString = $"There was an error getting our repos: { ex.Message }";
+		}
+
+	}
+}
